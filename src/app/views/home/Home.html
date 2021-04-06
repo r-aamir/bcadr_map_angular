@@ -1,0 +1,26 @@
+<div class="Home">
+    <div class="map" id="map">
+        <!-- <div id="mouse_position" class="ol-mouse-position"></div> -->
+        <div id="mouse_position" class="mouse_position"></div>
+        <div class="my-scale-line"></div>
+    </div>
+    <div class="panels">
+        <button (click)="addPlane()">加载迁徙图</button>
+        <button (click)="delPlane()">关闭迁徙图</button>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <button (click)="mDistance()">测距</button>
+        <button (click)="mArea()">测面</button>
+        <button (click)="mClear()">清除</button>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <button (click)="addPointBuffer()">点缓冲区分析</button>
+        <button (click)="addLineBuffer()">线缓冲区分析</button>
+        <button (click)="addPolygonBuffer()">面缓冲区分析</button>
+        <button (click)="delBuffer()">清除缓冲区</button>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <button (click)="addVoronoi()" >泰森多边形</button>
+        <button (click)="delVoronoi()">清除泰森多边形</button>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <button (click)="addRoadAnalysis()">道路分析</button>
+        <button (click)="delRoadAnalysis()">取消道路分析</button>
+    </div>
+</div>

@@ -1,0 +1,26 @@
+<div class="Login">
+    <div class="content">
+        <div class="logo">
+            <img src="../assets/logo.png" />
+        </div>
+        <div class="form">
+            <div class="title">系统登陆</div>
+            <form nz-form [formGroup]="validateForm" >
+                <nz-form-item>
+                    <nz-form-label [nzSm]="4" [nzXs]="14">用户名</nz-form-label>
+                    <nz-form-control>
+                        <input type="text" nz-input formControlName="userName" maxlength="20"/>
+                    </nz-form-control>
+                </nz-form-item>
+                <nz-form-item>
+                    <nz-form-label [nzSm]="4" [nzXs]="14">密码</nz-form-label>
+                    <nz-form-control>
+                        <input type="password" nz-input formControlName="passWord" maxlength="20"/>
+                    </nz-form-control>
+                </nz-form-item>
+                <button (click)="submitForm()">登陆</button>
+                <div class="tip">tip: 账号密码随意</div>
+            </form>
+        </div>
+    </div>
+</div>
