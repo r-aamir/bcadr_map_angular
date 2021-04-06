@@ -36,20 +36,10 @@ ul, ol { list-style: none; }
 body,html {
     height: 100%;
     #app { height:100%;}
-     /* 显示当前位置控件样式 */
-     .ol-mouse-position{
-        position: absolute !important;
-        width: 300px !important;
-        height: 20px !important;
-        left: 15px !important;
-        bottom: 10px !important;
-        color: rgba(0, 0, 0, 0.5) !important;
-        z-index: 1000 !important;
-    }
     /* gis地图比例尺样式 */
     .ol-scale-line {
         background: rgba(0,60,136,0.3) !important;
-        border-radius: 4px  !important;
+        border-radius: 4px !important;
         bottom: 10px !important;
         left: 90% !important;
         padding: 2px !important;
