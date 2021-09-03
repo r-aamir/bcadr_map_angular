@@ -7,6 +7,7 @@ import Style from 'ol/style/Style';
 import Stroke from 'ol/style/Stroke';
 
 let roadLayer:VectorLayer;
+
 export function addRoad(map:Map) {
     let roadUrl = "assets/json/bcadr_road.geojson";
     let roadSource = new VectorSource({

@@ -1,278 +1,229 @@
-import Map from 'ol/Map';
-import VectorSource from 'ol/source/Vector';
-import VectorLayer from 'ol/layer/Vector';
-import Style from 'ol/style/Style';
-import Fill from 'ol/style/Fill';
-import Stroke from 'ol/style/Stroke';
-import Circle from 'ol/style/Circle';
-import Polygon from 'ol/geom/Polygon';
-import LineString from 'ol/geom/LineString';
-import Point from 'ol/geom/Point';
-import Feature from 'ol/Feature';
-import Text from 'ol/style/Text';
-import { getLength } from 'ol/sphere';
-import { getArea } from 'ol/sphere';
+import 'ol/ol.css';
 import Draw from 'ol/interaction/Draw';
+import Map from 'ol/Map';
+import Overlay from 'ol/Overlay';
+import View from 'ol/View';
+import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style';
+import { LineString, Polygon } from 'ol/geom';
+import { Vector as VectorSource } from 'ol/source';
+import { Vector as VectorLayer } from 'ol/layer';
+import { getArea, getLength } from 'ol/sphere';
 import { unByKey } from 'ol/Observable';
-import Geometry from 'ol/geom/Geometry';
 
 
-let draw:Draw;
-let drawSource:VectorSource;//定义绘制图层
-let drawLayer:VectorLayer;//定义绘制图层
-let sketch:any;
-let output:string = "0";
-let lastPolygonLabelFeature:Feature; //记录上一个面标注要素
-let lastLengthLabelFeature:Feature; //记录上一个点标注要素
-// 初始化测量绘制图层
-export function initDrawLayer(map:Map) {
-    // let crossOriginS:string="anonymous";
+let draw: Draw;
+let drawSource: VectorSource;//定义绘制图层
+let drawLayer: VectorLayer;//定义绘制图层
+
+/**
+ * Currently drawn feature.
+ * @type {import("../src/ol/Feature.js").default}
+ */
+let sketch: any;
+
+/**
+ * The help tooltip element.
+ * @type {HTMLElement}
+ */
+let helpTooltipElement: any;
+
+/**
+ * Overlay to show the help messages.
+ * @type {Overlay}
+ */
+let helpTooltip: Overlay;
+
+/**
+ * The measure tooltip element.
+ * @type {HTMLElement}
+ */
+let measureTooltipElement: any;
+
+/**
+ * Overlay to show the measurement.
+ * @type {Overlay}
+ */
+let measureTooltip: Overlay;
+
+/**
+ * Handle pointer move.
+ * @param {import("../src/ol/MapBrowserEvent").default} evt The event.
+ */
+
+
+export function initDrawLayer(map: Map) {
     drawSource = new VectorSource();
+
     drawLayer = new VectorLayer({
         source: drawSource,
         style: new Style({
             fill: new Fill({
-                color: "rgba(255, 255, 255, 0.2)",
+                color: 'rgba(255, 255, 255, 0.2)',
             }),
             stroke: new Stroke({
-                color: "#ffcc33",
+                color: '#ffcc33',
                 width: 2,
             }),
-            image: new Circle({
+            image: new CircleStyle({
                 radius: 7,
                 fill: new Fill({
-                    color: "#ffcc33",
+                    color: '#ffcc33',
                 }),
             }),
         }),
     });
+
     map.addLayer(drawLayer);
-    map.on("pointermove", function (evt:any) {
-        if (evt.dragging) {
-            return;
-        }
-        let Coord;
-        if (sketch) {
-            let geom:Geometry = sketch.getGeometry();
-            if (geom instanceof Polygon) {
-                if (lastPolygonLabelFeature.get("name")) {
-                    //鼠标移动 不停的添加和删除
-                    drawSource.removeFeature(lastPolygonLabelFeature);
-                }
-                Coord = geom.getInteriorPoint().getCoordinates();
-                
-                //新建一个要素ol.Feature
-                lastPolygonLabelFeature = new Feature({
-                    labelPoint: new Point(Coord), //几何信息
-                    name: output,
-                });
-                console.log(lastPolygonLabelFeature.get("name"));
-                
-                lastPolygonLabelFeature.setStyle(
-                    createLabelStyle(lastPolygonLabelFeature, 0, 0)
-                );
-                drawSource.addFeature(lastPolygonLabelFeature);
-            } else if (geom instanceof LineString) {
-                if (lastLengthLabelFeature) {
-                    drawSource.removeFeature(
-                        lastLengthLabelFeature
-                    );
-                }
-                Coord = geom.getLastCoordinate();
-                //新建一个要素ol.Feature
-                lastLengthLabelFeature = new Feature({
-                    geometry: new Point(Coord), //几何信息
-                    name: output,
-                });
-                lastLengthLabelFeature.setStyle(
-                    createLabelStyle(lastLengthLabelFeature, 35, -10)
-                );
-                //设置要素样式
-                drawSource.addFeature(lastLengthLabelFeature);
-            }
-        }
-    });
-    map.on("click", function (evt:any) {
-        let coordinate = evt.coordinate; //鼠标单击点的坐标
-        if (output == "0") {
-            lastPolygonLabelFeature = new Feature();
-            if (lastLengthLabelFeature) {
-                drawSource.removeFeature(lastLengthLabelFeature);
-                lastLengthLabelFeature = new Feature();
-            }
-            return;
-        }
-        var Coord;
-        if (sketch) {
-            var geom = sketch.getGeometry();
-            if (geom instanceof Polygon) {
-                if (lastPolygonLabelFeature) {
-                    drawSource.removeFeature(
-                        lastPolygonLabelFeature
-                    );
-                }
-                Coord = geom.getInteriorPoint().getCoordinates();
-                //新建一个要素ol.Feature
-                var newFeature = new Feature({
-                    geometry: new Point(Coord), //几何信息
-                    name: output,
-                });
-                lastPolygonLabelFeature = newFeature;
-                newFeature.setStyle(
-                    createLabelStyle(newFeature, 0, 0)
-                ); //设置要素样式
-                drawSource.addFeature(newFeature);
-            } else if (geom instanceof LineString) {
-                Coord = geom.getLastCoordinate();
-                //新建一个要素ol.Feature
-                let newFeature = new Feature({
-                    geometry: new Point(Coord), //几何信息
-                    name: output,
-                });
-                newFeature.setStyle(
-                    createLabelStyle(newFeature, 35, -10)
-                ); //设置要素样式
-                drawSource.addFeature(newFeature);
-            }
-            let pointFeature = new Feature({
-                geometry: new Point(coordinate), //几何信息
-                name: output,
-            });
-            drawSource.addFeature(pointFeature);
-        }
-    });
-}
-// 定义测量结果的显示的样式
-function createLabelStyle(feature:Feature, offsetX:any, offsetY:any) {
-    return new Style({
-        text: new Text({
-            textAlign: "center", //位置
-            textBaseline: "middle", //基准线
-            font: "normal 10px sans-serif", //文字样式
-            text: feature.get("name"), //文本内容
-            fill: new Fill({
-                //文本填充样式（即文字颜色)
-                color: "white",
-            }),
-            stroke: new Stroke({
-                color: "black",
-                width: 5,
-            }),
-            offsetX: offsetX,
-            offsetY: offsetY,
-        }),
-    });
 }
 
-function formatLength(line:LineString) {
-    let length = getLength(line, {
+/**
+ * @param {LineString} line The line.
+ * @return {string} The formatted length.
+ */
+var formatLength = function (line: LineString) {
+    var length = getLength(line, {
         projection: "EPSG:3857",
         radius: 6378137,
     });
-    let outputs;
+    var output;
     if (length > 100) {
-        outputs = Math.round((length / 1000) * 100) / 100 + " " + "千米";
+        output = Math.round((length / 1000) * 100) / 100 + ' ' + 'km';
     } else {
-        outputs = Math.round(length * 100) / 100 + " " + "米";
+        output = Math.round(length * 100) / 100 + ' ' + 'm';
     }
-    return outputs;
-}
+    return output;
+};
 
-function formatArea(polygon:Polygon) {
-    var area:any = getArea(polygon, {
+/**
+ * @param {Polygon} polygon The polygon.
+ * @return {string} Formatted area.
+ */
+var formatArea = function (polygon: Polygon) {
+    var area = getArea(polygon, {
         projection: "EPSG:3857",
         radius: 6378137,
     });
-    let outputs:string;
+    var output;
     if (area > 10000) {
-        outputs = Math.round((area / 1000000) * 100) / 100 + " " + "平方公里";
+        output = Math.round((area / 1000000) * 100) / 100 + ' ' + 'km<sup>2</sup>';
     } else {
-        outputs = Math.round(area * 100) / 100 + " " + "平方米";
+        output = Math.round(area * 100) / 100 + ' ' + 'm<sup>2</sup>';
     }
-    return outputs;
-}
+    return output;
+};
 
-function addInteraction(drawType:string, map:Map) {
-    let type:any = drawType == "area" ? "Polygon" : "LineString";
+function addInteraction(drawType: string, map: Map) {
+    let type: any = drawType == "area" ? "Polygon" : "LineString";
     draw = new Draw({
         source: drawSource,
         type: type,
         style: new Style({
             fill: new Fill({
-                color: "rgba(255, 0, 0, 0.2)",
+                color: 'rgba(255, 255, 255, 0.2)',
             }),
             stroke: new Stroke({
-                color: "rgb(255,116,3)",
+                color: 'rgba(0, 0, 0, 0.5)',
+                lineDash: [10, 10],
                 width: 2,
             }),
-            image: new Circle({
+            image: new CircleStyle({
                 radius: 5,
                 stroke: new Stroke({
-                    color: "rgba(255, 0, 0, 0.1)",
+                    color: 'rgba(0, 0, 0, 0.7)',
                 }),
                 fill: new Fill({
-                    color: "rgba(255,116,3, 0.3)",
+                    color: 'rgba(255, 255, 255, 0.2)',
                 }),
             }),
         }),
     });
     map.addInteraction(draw);
-    let listener:any;
-    draw.on(
-        "drawstart",
-        function (evt:any) {
-            // set sketch
-            sketch = evt.feature;
-            listener = sketch
-                .getGeometry()
-                .on("change", function (evt:any) {
-                    var geom = evt.target;
-                    if (geom instanceof Polygon) {
-                        output = formatArea(geom);
-                    } else if (geom instanceof LineString) {
-                        output = formatLength(geom);
-                    }
-                });
-        }
-    );
-    draw.on(
-        "drawend",
-        function (evt:any) {
-            sketch = null;
-            unByKey(listener);
-            output = "0";
-        }
-    );
+
+    createMeasureTooltip(map);
+    createHelpTooltip(map);
+
+    var listener: any;
+    draw.on('drawstart', function (evt: any) {
+        // set sketch
+        sketch = evt.feature;
+
+        /** @type {import("../src/ol/coordinate.js").Coordinate|undefined} */
+        var tooltipCoord = evt.coordinate;
+
+        listener = sketch.getGeometry().on('change', function (evt: any) {
+            var geom = evt.target;
+            var output;
+            if (geom instanceof Polygon) {
+                output = formatArea(geom);
+                tooltipCoord = geom.getInteriorPoint().getCoordinates();
+            } else if (geom instanceof LineString) {
+                output = formatLength(geom);
+                tooltipCoord = geom.getLastCoordinate();
+                measureTooltipElement.className = 'ol-tooltip ol-tooltip-static';
+        measureTooltip.setOffset([0, -7]);
+                createMeasureTooltip(map);
+            }
+            measureTooltipElement.innerHTML = output;
+            measureTooltip.setPosition(tooltipCoord);
+        });
+    });
+
+    draw.on('drawend', function () {
+        measureTooltipElement.className = 'ol-tooltip ol-tooltip-static';
+        measureTooltip.setOffset([0, -7]);
+        sketch = null;
+        measureTooltipElement = null;
+        createMeasureTooltip(map);
+        unByKey(listener);
+    });
 }
 
+function createHelpTooltip(map: Map) {
+    if (helpTooltipElement) {
+        helpTooltipElement.parentNode.removeChild(helpTooltipElement);
+    }
+    helpTooltipElement = document.createElement('div');
+    helpTooltipElement.className = 'ol-tooltip hidden';
+    helpTooltip = new Overlay({
+        element: helpTooltipElement,
+        offset: [15, 0],
+        positioning: "center-left" as any,
+    });
+    map.addOverlay(helpTooltip);
+}
 
-export function measureDistance(map:Map) {
+function createMeasureTooltip(map: Map) {
+    if (measureTooltipElement) {
+        measureTooltipElement.parentNode.removeChild(measureTooltipElement);
+    }
+    measureTooltipElement = document.createElement('div');
+    measureTooltipElement.className = 'ol-tooltip ol-tooltip-measure';
+    measureTooltip = new Overlay({
+        element: measureTooltipElement,
+        offset: [0, -15],
+        positioning: 'bottom-center' as any,
+    });
+    map.addOverlay(measureTooltip);
+}
+
+export function measureDistance(map: Map) {
     if (draw) {
         map.removeInteraction(draw);
     }
     addInteraction("length", map);
 }
 
-export function measureArea(map:Map) {
+export function measureArea(map: Map) {
     if (draw) {
         map.removeInteraction(draw);
     }
     addInteraction("area", map);
 }
 
-export function measureClear(map:Map) {
+export function measureClear(map: Map) {
     map.removeInteraction(draw);
-    
     drawSource = new VectorSource();
-    // drawLayer.setSource(drawSource);
     drawLayer.setSource(drawSource);
-    lastPolygonLabelFeature =  new Feature();
-    lastLengthLabelFeature =  new Feature();
-    // lastPolygonLabelFeature =  null;
-    // lastLengthLabelFeature =  null;
     sketch = null;
-    output = "0";
-    // this.closeLayerDownBox();
-    // this.command = "none";
+    map.getOverlays().clear();
 }
-

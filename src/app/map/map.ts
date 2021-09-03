@@ -16,6 +16,12 @@ import MousePosition from "ol/control/MousePosition";
 import * as olCoordinate from 'ol/coordinate';
 import Zoom from 'ol/control/Zoom';
 
+
+declare global {
+    interface Window {
+      map: Map
+    }
+  }
 export function initMap() {
     let map = new Map({
         target: 'map',
@@ -237,5 +243,6 @@ export function initMap() {
         console.log(e.coordinate)
         console.log(olProj.transform(e.coordinate, 'EPSG:3857', 'EPSG:4326'));
     });
+    window.map = map;
     return map;
 }

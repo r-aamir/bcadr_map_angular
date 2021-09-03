@@ -11,7 +11,7 @@ import {
     measureDistance,
     measureArea,
     measureClear,
-} from "../../map/tools/measures";
+} from "../../map/tools/measure";
 
 import {
     pointBuffer,

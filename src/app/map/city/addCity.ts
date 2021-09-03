@@ -12,7 +12,6 @@ import * as henan from "./henan.json";
  * 设置区域
  */
 let cityLayer: VectorLayer;
-let g : Feature;
 
 
 export function addArea() {
@@ -21,42 +20,43 @@ export function addArea() {
     let areaFeature: any[] = [];
 
     if (geo.features) {
-        geo.features.forEach( g  => {
-            let lineData = g;
-            if (lineData.geometry.type == "MultiPolygon") {
-                areaFeature.push(new Feature({
-                    /* geometry: new MultiPolygon(
-                        lineData.geometry.coordinates
-                    ).transform("EPSG:4326", "EPSG:3857") */
-                    geometry: new MultiPolygon(
-                        lineData.geometry.coordinates
-                    ),
-                    style: new Style({
-                        fill: new Fill({ color: "#4e98f444" }),
-                        stroke: new Stroke({
-                            width: 3,
-                            color: [71, 137, 227, 1]
+        // geo.features.forEach( g  => {
+            for (let index = 0; index < geo.features.length; index++) {
+                const lineData = geo.features[index];
+                if (lineData.geometry.type == "MultiPolygon") {
+                    areaFeature.push(new Feature({
+                        /* geometry: new MultiPolygon(
+                            lineData.geometry.coordinates
+                        ).transform("EPSG:4326", "EPSG:3857") */
+                        geometry: new MultiPolygon(
+                            lineData.geometry.coordinates
+                        ),
+                        style: new Style({
+                            fill: new Fill({ color: "#4e98f444" }),
+                            stroke: new Stroke({
+                                width: 3,
+                                color: [71, 137, 227, 1]
+                            })
                         })
-                    })
-                }));
-            } else if (lineData.geometry.type == "Polygon") {
-                areaFeature.push(new Feature({
-                    geometry: new Polygon(
-                        lineData.geometry.coordinates
-                    ),
-                    style: new Style({
-                        fill: new Fill({ color: "#4e98f444" }),
-                        stroke: new Stroke({
-                            width: 3,
-                            color: [71, 137, 227, 1]
+                    }));
+                } else if (lineData.geometry.type == "Polygon") {
+                    areaFeature.push(new Feature({
+                        geometry: new Polygon(
+                            lineData.geometry.coordinates
+                        ),
+                        style: new Style({
+                            fill: new Fill({ color: "#4e98f444" }),
+                            stroke: new Stroke({
+                                width: 3,
+                                color: [71, 137, 227, 1]
+                            })
                         })
-                    })
-                }));
-            } else {
-                console.log("error!");
-
-            }
-        });
+                    }));
+                } else {
+                    console.log("error!");
+    
+                }
+            };
     }
 
     // 设置图层
