@@ -58,5 +58,6 @@ function addArea(geo = []) {
             }));
         }
     });
-    cityLayer.q().addFeatures(areaFeature);
+    cityLayer.addFeatures(areaFeature);
+  
 }
