@@ -15,7 +15,8 @@ let cityLayer: VectorLayer;
 
 
 export function addArea() {
-    const geo = (henan as any).data
+    
+    let geo = (henan as any).data;
     if (geo.length == 0) return false;
     let areaFeature: any[] = [];
 
@@ -54,7 +55,6 @@ export function addArea() {
                     }));
                 } else {
                     console.log("error!");
-    
                 }
             };
     }
@@ -67,6 +67,4 @@ export function addArea() {
     });
     // 添加图层
     window.map.addLayer(cityLayer);
-    // cityLayer.q().addFeatures(areaFeature);
-    // cityLayer.addFeatures(areaFeature);
 }

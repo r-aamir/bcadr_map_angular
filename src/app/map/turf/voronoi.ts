@@ -1,17 +1,17 @@
-import { viewFlyTo } from "../common/flyTo"
+import { viewFlyTo } from "../common/flyTo";
 
-import voronoi from '@turf/voronoi'
-import buffer from '@turf/buffer'
-import multiPoint from '@turf/helpers'
+import voronoi from '@turf/voronoi';
+import buffer from '@turf/buffer';
+import multiPoint from '@turf/helpers';
 
-import Map from "ol/Map"
-import GeoJSON from "ol/format/GeoJSON"
+import Map from "ol/Map";
+import GeoJSON from "ol/format/GeoJSON";
 import VectorSource from 'ol/source/Vector';
-import VectorLayer from "ol/layer/Vector"
-import Style from "ol/style/Style"
-import stroke from "ol/style/Stroke"
-import Fill from "ol/style/Fill"
-import Circle from "ol/style/Circle"
+import VectorLayer from "ol/layer/Vector";
+import Style from "ol/style/Style";
+import stroke from "ol/style/Stroke";
+import Fill from "ol/style/Fill";
+import Circle from "ol/style/Circle";
 import * as olProj from 'ol/proj';
 import Feature from 'ol/Feature';
 
@@ -24,11 +24,12 @@ export function addVoronoiLayer(map: Map) {
             return res.json();
         })
         .then(function (json) {
-            console.log("111");
             convertDataToGeoJson(json);
             updateView(map, voronoiData);
         });
+
     viewFlyTo(map, olProj.fromLonLat([116.53898130231798, 39.76589466010563]));
+    
 }
 
 function convertDataToGeoJson(data: any) {
@@ -108,7 +109,7 @@ function updateView(map: Map, voronoiData: any) {
         })
     };
     let styleFunction = function (feature:any) {
-        console.log(feature.getGeometry().getType());
+        // console.log(feature.getGeometry().getType());
         // return styles;
         return styles[feature.getGeometry().getType()];
     };
@@ -159,7 +160,7 @@ function updateView(map: Map, voronoiData: any) {
         features = temporaryFeatures;
         return features;
     }; */
-    console.log(voronoiData);
+    // console.log(voronoiData);
 
     let source = new VectorSource();
     let buffers: any = buffer(voronoiData, 0.001, {
@@ -167,7 +168,7 @@ function updateView(map: Map, voronoiData: any) {
     });
 
     let oljson = new GeoJSON();
-    console.log(buffers);
+    // console.log(buffers);
 
     let features = buffers.features;
     for (let i = 0; i < features.length; i++) {

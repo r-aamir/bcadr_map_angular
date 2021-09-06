@@ -1,4 +1,4 @@
-import LayerSwitcher from "ol-layerswitcher";
+
 import { BaseLayerOptions, GroupLayerOptions }  from "ol-layerswitcher";
 
 import {TdtLayers,ArcGisLayers} from './config/SysConfig';
@@ -16,6 +16,8 @@ import MousePosition from "ol/control/MousePosition";
 import * as olCoordinate from 'ol/coordinate';
 import Zoom from 'ol/control/Zoom';
 
+import control from 'ol/control';
+import LayerSwitcher from "ol-layerswitcher";
 
 declare global {
     interface Window {

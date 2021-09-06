@@ -174,7 +174,7 @@ export function addEcharts(map:Map) {
         let res = [];
         for (let i = 0; i < data.length; i++) {
             let dataItem = data[i];
-            console.log(dataItem[0].name);
+            // console.log(dataItem[0].name);
             let fromCoord = geoCoordMap[dataItem[0].name];
             let toCoord = geoCoordMap[dataItem[1].name];
             if (fromCoord && toCoord) {
@@ -261,7 +261,7 @@ export function addEcharts(map:Map) {
                     }
                 },
                 data: item[1].map(function (dataItem:any) {
-                    console.log(dataItem);
+                    // console.log(dataItem);
                     
                     return {
                         name: dataItem[1].name,

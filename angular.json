@@ -23,6 +23,9 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "allowedCommonJsDependencies": [
+                "ol-layerswitcher","ol-echarts","ng-zorro-antd","echarts","pbf","date-fns"
+            ],
             "outputPath": "dist/bcadr-map-angular",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -40,9 +43,9 @@
               "node_modules/ol-layerswitcher/dist/ol-layerswitcher.css"
             ],
             "scripts": [
+                // "node_modules/ol-layerswitcher/dist/ol-layerswitcher.d.ts",
                 "node_modules/ol-layerswitcher/dist/ol-layerswitcher.js",
                 "node_modules/ol-echarts/dist/ol-echarts.js"
-                
             ]
           },
           "configurations": {
