@@ -10,6 +10,8 @@ let roadLayer:VectorLayer;
 
 export function addRoad(map:Map) {
     let roadUrl = "assets/json/bcadr_road.geojson";
+    console.log(roadUrl);
+    
     let roadSource = new VectorSource({
         format: new GeoJSON(),
         url: roadUrl,

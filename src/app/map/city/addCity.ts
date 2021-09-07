@@ -5,30 +5,24 @@ import { Fill, Stroke, Style } from 'ol/style';
 import MultiPolygon from 'ol/geom/MultiPolygon';
 import Polygon from 'ol/geom/Polygon';
 
-import * as henan from "./henan.json";
-
+import * as henan from './henan.json';
 
 /**
  * 设置区域
  */
 let cityLayer: VectorLayer;
 
-
 export function addArea() {
+    const geo = (<any>henan).default;
+    let areaFeature : any[] = [];
+    let lineData : any;
     
-    let geo = (henan as any).data;
-    if (geo.length == 0) return false;
-    let areaFeature: any[] = [];
-
     if (geo.features) {
-        // geo.features.forEach( g  => {
             for (let index = 0; index < geo.features.length; index++) {
-                const lineData = geo.features[index];
+                lineData = geo.features[index];
                 if (lineData.geometry.type == "MultiPolygon") {
+                    
                     areaFeature.push(new Feature({
-                        /* geometry: new MultiPolygon(
-                            lineData.geometry.coordinates
-                        ).transform("EPSG:4326", "EPSG:3857") */
                         geometry: new MultiPolygon(
                             lineData.geometry.coordinates
                         ),
@@ -41,6 +35,8 @@ export function addArea() {
                         })
                     }));
                 } else if (lineData.geometry.type == "Polygon") {
+                    console.log("2222");
+                    
                     areaFeature.push(new Feature({
                         geometry: new Polygon(
                             lineData.geometry.coordinates
@@ -58,6 +54,8 @@ export function addArea() {
                 }
             };
     }
+    console.log(areaFeature);
+    
 
     // 设置图层
     cityLayer = new VectorLayer({

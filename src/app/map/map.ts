@@ -18,6 +18,7 @@ import Zoom from 'ol/control/Zoom';
 
 import control from 'ol/control';
 import LayerSwitcher from "ol-layerswitcher";
+import { addArea } from './city/addCity'
 
 declare global {
     interface Window {
@@ -208,8 +209,8 @@ export function initMap() {
             } as GroupLayerOptions),
         ],
         view: new View({
-            center: olProj.transform([116.53898130231798, 39.76589466010563], 'EPSG:4326', 'EPSG:3857'),
-            // center: olProj.transform([101.46912, 36.24274], 'EPSG:4326', 'EPSG:3857'),
+            center: [116.53898130231798, 39.76589466010563],
+            projection: 'EPSG:4326',
             zoom: 15
         }),
         controls: olControl
@@ -243,8 +244,10 @@ export function initMap() {
     map.addControl(layerSwitcher);
     map.on('singleclick', function (e) {
         console.log(e.coordinate)
-        console.log(olProj.transform(e.coordinate, 'EPSG:3857', 'EPSG:4326'));
     });
     window.map = map;
+    addArea();
+
+
     return map;
 }
